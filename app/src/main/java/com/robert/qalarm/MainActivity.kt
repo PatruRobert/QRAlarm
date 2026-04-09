@@ -145,16 +145,40 @@ class MainActivity : AppCompatActivity() {
                 )
             }
 
-            val deleteBtn = Button(this).apply {
-                text = "DELETE"
-                textSize = 11f
-                setTextColor(resources.getColor(R.color.danger, theme))
-                background = resources.getDrawable(R.drawable.bg_button_danger, theme)
+            val menuBtn = Button(this).apply {
+                text = "⋮"
+                textSize = 20f
+                setTextColor(resources.getColor(R.color.text_secondary, theme))
+                background = null
                 setOnClickListener {
-                    AlarmScheduler.cancel(this@MainActivity, alarm.id)
-                    AlarmStorage.removeAlarm(this@MainActivity, alarm.id)
-                    refreshAlarmList()
-                    Toast.makeText(this@MainActivity, "Alarm removed", Toast.LENGTH_SHORT).show()
+                    val popup = android.widget.PopupMenu(this@MainActivity, this)
+                    popup.menu.add(0, 1, 0, "Duplicate")
+                    popup.menu.add(0, 2, 1, "Delete")
+                    popup.setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            1 -> {
+                                // Duplicate
+                                val newAlarm = alarm.copy(
+                                    id = AlarmStorage.generateId(this@MainActivity)
+                                )
+                                AlarmStorage.addAlarm(this@MainActivity, newAlarm)
+                                AlarmScheduler.schedule(this@MainActivity, newAlarm)
+                                refreshAlarmList()
+                                Toast.makeText(this@MainActivity, "Alarm duplicated", Toast.LENGTH_SHORT).show()
+                                true
+                            }
+                            2 -> {
+                                // Delete
+                                AlarmScheduler.cancel(this@MainActivity, alarm.id)
+                                AlarmStorage.removeAlarm(this@MainActivity, alarm.id)
+                                refreshAlarmList()
+                                Toast.makeText(this@MainActivity, "Alarm removed", Toast.LENGTH_SHORT).show()
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                    popup.show()
                 }
             }
 
@@ -163,7 +187,7 @@ class MainActivity : AppCompatActivity() {
             infoLayout.addView(daysText)
             infoLayout.addView(qrIndicator)
             card.addView(infoLayout)
-            card.addView(deleteBtn)
+            card.addView(menuBtn)
             container.addView(card)
         }
     }
