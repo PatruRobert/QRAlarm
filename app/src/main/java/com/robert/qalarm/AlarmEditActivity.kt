@@ -1,5 +1,6 @@
 package com.robert.qalarm
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -43,6 +44,7 @@ class AlarmEditActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_alarm_edit)
@@ -172,11 +174,13 @@ class AlarmEditActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateQRButton() {
         val btn = findViewById<Button>(R.id.btnSetQR)
         btn.text = if (currentQRCode != null) "QR SET ✓" else "SET QR CODE"
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateRingtoneButton() {
         val btn = findViewById<Button>(R.id.btnRingtones)
         btn.text = if (selectedRingtonePaths.isNotEmpty())

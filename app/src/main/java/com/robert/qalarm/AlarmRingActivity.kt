@@ -1,5 +1,6 @@
 package com.robert.qalarm
 
+import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.content.Intent
 import android.os.Build
@@ -24,6 +25,7 @@ class AlarmRingActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,6 +68,7 @@ class AlarmRingActivity : AppCompatActivity() {
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            @SuppressLint("SetTextI18n")
             override fun handleOnBackPressed() {
                 android.app.AlertDialog.Builder(this@AlarmRingActivity)
                     .setTitle("Skip alarm?")

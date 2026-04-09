@@ -10,7 +10,16 @@ import java.util.Calendar
 @androidx.camera.core.ExperimentalGetImage
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val alarmId = intent.getIntExtra("alarm_id", -1)
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+            val alarms = AlarmStorage.getAlarms(context)
+            for (alarm in alarms) {
+                if (alarm.isActive) {
+                    AlarmScheduler.schedule(context, alarm)
+                }
+            }
+            return
+        }
+
         val ringtonePath = intent.getStringExtra("ringtone_path")
         val qrCode = intent.getStringExtra("qr_code")
 
