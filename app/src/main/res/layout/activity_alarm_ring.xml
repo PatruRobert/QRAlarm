@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/bg_primary"
+    android:padding="40dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚠"
+        android:textSize="48sp"
+        android:textColor="@color/danger"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WAKE UP"
+        android:textSize="48sp"
+        android:textColor="@color/text_primary"
+        android:fontFamily="monospace"
+        android:letterSpacing="0.2"
+        android:layout_marginBottom="8dp"/>
+
+    <View
+        android:layout_width="64dp"
+        android:layout_height="2dp"
+        android:background="@color/danger"
+        android:layout_marginBottom="48dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan your QR code to dismiss"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btnScanQR"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="SCAN QR CODE"
+        android:textColor="@color/danger"
+        android:textSize="13sp"
+        android:letterSpacing="0.15"
+        android:background="@drawable/bg_button_danger"/>
+
+</LinearLayout>

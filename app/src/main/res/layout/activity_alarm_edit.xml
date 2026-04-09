@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/tvEditTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NEW ALARM"
+            android:textColor="@color/accent"
+            android:textSize="12sp"
+            android:letterSpacing="0.3"
+            android:fontFamily="monospace"
+            android:layout_marginBottom="4dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Time picker card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TIME"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:letterSpacing="0.2"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <NumberPicker
+                    android:id="@+id/npHour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=":"
+                    android:textSize="40sp"
+                    android:textColor="@color/accent"
+                    android:paddingHorizontal="16dp"
+                    android:fontFamily="monospace"/>
+
+                <NumberPicker
+                    android:id="@+id/npMinute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Label card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LABEL"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:letterSpacing="0.2"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/etLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="e.g. Work, Gym..."
+                android:inputType="text"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:background="@drawable/bg_input"
+                android:padding="12dp"
+                android:textSize="16sp"/>
+
+        </LinearLayout>
+
+        <!-- Repeat card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="20dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="REPEAT"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:letterSpacing="0.2"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="8">
+
+                <CheckBox android:id="@+id/cbMon"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="M"
+                    android:textColor="@color/text_primary"
+                    android:buttonTint="@color/accent"/>
+                <CheckBox android:id="@+id/cbTue"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="T"
+                    android:textColor="@color/text_primary"
+                    android:buttonTint="@color/accent"/>
+                <CheckBox android:id="@+id/cbWed"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="W"
+                    android:textColor="@color/text_primary"
+                    android:buttonTint="@color/accent"/>
+                <CheckBox android:id="@+id/cbThu"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="T"
+                    android:textColor="@color/text_primary"
+                    android:buttonTint="@color/accent"/>
+                <CheckBox android:id="@+id/cbFri"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="F"
+                    android:textColor="@color/text_primary"
+                    android:buttonTint="@color/accent"/>
+                <CheckBox android:id="@+id/cbSat"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="S"
+                    android:textColor="@color/text_primary"
+                    android:buttonTint="@color/accent"/>
+                <CheckBox android:id="@+id/cbSun"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="S"
+                    android:textColor="@color/text_primary"
+                    android:buttonTint="@color/accent"/>
+                <CheckBox android:id="@+id/cbWeekly"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="All"
+                    android:textColor="@color/text_primary"
+                    android:buttonTint="@color/accent"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSetQR"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="SET QR CODE"
+            android:textColor="@color/bg_primary"
+            android:textSize="12sp"
+            android:letterSpacing="0.1"
+            android:background="@drawable/bg_button_accent"
+            android:layout_marginBottom="10dp"/>
+
+        <Button
+            android:id="@+id/btnRingtones"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="ADD RINGTONES"
+            android:textColor="@color/bg_primary"
+            android:textSize="12sp"
+            android:letterSpacing="0.1"
+            android:background="@drawable/bg_button_accent"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnSaveAlarm"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="SAVE ALARM"
+            android:textColor="@color/bg_primary"
+            android:textSize="13sp"
+            android:letterSpacing="0.15"
+            android:background="@drawable/bg_button_accent"/>
+
+    </LinearLayout>
+</ScrollView>

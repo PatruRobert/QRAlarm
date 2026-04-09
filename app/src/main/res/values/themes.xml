@@ -1,0 +1,19 @@
+<resources>
+    <style name="Theme.QAlarm" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/bg_primary</item>
+        <item name="android:statusBarColor">@color/bg_primary</item>
+        <item name="android:navigationBarColor">@color/bg_primary</item>
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorPrimaryVariant">@color/accent</item>
+        <item name="colorOnPrimary">@color/bg_primary</item>
+        <item name="colorSurface">@color/bg_surface</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="Theme.QAlarm.Alarm" parent="Theme.QAlarm">
+        <item name="android:windowBackground">@color/bg_primary</item>
+        <item name="android:statusBarColor">@color/danger</item>
+    </style>
+</resources>

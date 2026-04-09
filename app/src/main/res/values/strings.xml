@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">QAlarm</string>
+    <string name="set_alarm">Set Alarm</string>
+    <string name="scan_qr_to_dismiss">Scan QR to Dismiss</string>
+    <string name="wake_up">WAKE UP!</string>
+    <string name="qr_set">QR code is set ✓</string>
+    <string name="qr_not_set">No QR code set</string>
+</resources>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="QRALARM"
+            android:textColor="@color/accent"
+            android:textSize="12sp"
+            android:letterSpacing="0.3"
+            android:fontFamily="monospace"
+            android:layout_marginBottom="4dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border"/>
+
+    </LinearLayout>
+
+    <!-- Centered alarm list -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="60dp"
+        android:paddingBottom="100dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/alarmListContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp"/>
+
+    </ScrollView>
+
+    <!-- FAB + button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="32dp"
+        android:src="@android:drawable/ic_input_add"
+        android:backgroundTint="@color/accent"
+        android:tint="@color/bg_primary"/>
+
+</FrameLayout>
