@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
@@ -17,6 +18,7 @@ import android.os.PowerManager
 import android.os.SystemClock
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
+import androidx.core.content.edit
 
 class AlarmService : Service() {
 
@@ -45,7 +47,12 @@ class AlarmService : Service() {
                         try {
                             MediaPlayer().apply {
                                 setDataSource(path)
-                                setAudioStreamType(AudioManager.STREAM_ALARM)
+                                setAudioAttributes(
+                                    AudioAttributes.Builder()
+                                        .setUsage(AudioAttributes.USAGE_ALARM)
+                                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                        .build()
+                                )
                                 isLooping = true
                                 prepare()
                                 start()
@@ -142,16 +149,21 @@ class AlarmService : Service() {
         val ringtonePath = intent?.getStringExtra("ringtone_path")?.takeIf { it.isNotEmpty() }
             ?: prefs.getString("last_ringtone_path", null)
 
-// Save it so restarts can recover it
+        // Save it so restarts can recover it
         if (!ringtonePath.isNullOrEmpty()) {
-            prefs.edit().putString("last_ringtone_path", ringtonePath).apply()
+            prefs.edit { putString("last_ringtone_path", ringtonePath) }
         }
 
         mediaPlayer = if (!ringtonePath.isNullOrEmpty()) {
             try {
                 MediaPlayer().apply {
                     setDataSource(ringtonePath)
-                    setAudioStreamType(AudioManager.STREAM_ALARM)
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build()
+                    )
                     isLooping = true
                     prepare()
                     start()
@@ -170,7 +182,12 @@ class AlarmService : Service() {
         val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
         return MediaPlayer().apply {
             setDataSource(applicationContext, alarmUri)
-            setAudioStreamType(AudioManager.STREAM_ALARM)
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build()
+            )
             isLooping = true
             prepare()
             start()
@@ -202,7 +219,7 @@ class AlarmService : Service() {
         mediaPlayer = null
         wakeLock?.release()
         getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE)
-            .edit().remove("last_ringtone_path").apply()
+            .edit { remove("last_ringtone_path") }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

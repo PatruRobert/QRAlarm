@@ -1,5 +1,6 @@
 package com.robert.qalarm
 
+import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
@@ -11,7 +12,6 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
 import java.io.File
 
 @androidx.camera.core.ExperimentalGetImage
@@ -25,7 +25,6 @@ class RingtonePickerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val prefs = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE)
         val alarmId = intent.getIntExtra("alarm_id", -1)
 
         if (alarmId != -1) {
@@ -38,6 +37,7 @@ class RingtonePickerActivity : AppCompatActivity() {
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
+    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private fun buildUI(alarmId: Int) {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -83,7 +83,7 @@ class RingtonePickerActivity : AppCompatActivity() {
 
         selectAllCheckbox = CheckBox(this).apply {
             isChecked = true
-            buttonTint = android.content.res.ColorStateList.valueOf(
+            buttonTintList = android.content.res.ColorStateList.valueOf(
                 resources.getColor(R.color.accent, theme)
             )
             setOnCheckedChangeListener { _, checked ->
@@ -145,6 +145,7 @@ class RingtonePickerActivity : AppCompatActivity() {
         populateList(listContainer)
     }
 
+    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private fun populateList(container: LinearLayout) {
         val folder = File(Environment.getExternalStorageDirectory(), "QRAlarm")
 
@@ -190,7 +191,7 @@ class RingtonePickerActivity : AppCompatActivity() {
 
             val checkbox = CheckBox(this).apply {
                 isChecked = selectedPaths.contains(file.absolutePath)
-                buttonTint = android.content.res.ColorStateList.valueOf(
+                buttonTintList = android.content.res.ColorStateList.valueOf(
                     resources.getColor(R.color.accent, theme)
                 )
                 setOnCheckedChangeListener { _, checked ->

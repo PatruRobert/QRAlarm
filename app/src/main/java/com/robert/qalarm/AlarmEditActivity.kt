@@ -31,19 +31,6 @@ class AlarmEditActivity : AppCompatActivity() {
         }
     }
 
-    private val ringtoneLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val paths = result.data?.getStringArrayListExtra("selected_paths")
-            if (paths != null) {
-                selectedRingtonePaths.clear()
-                selectedRingtonePaths.addAll(paths)
-                updateRingtoneButton()
-            }
-        }
-    }
-
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +76,8 @@ class AlarmEditActivity : AppCompatActivity() {
 
         btnRingtones.setOnClickListener {
             val intent = Intent(this, RingtonePickerActivity::class.java)
-            intent.putStringArrayListExtra("preselected_paths", ArrayList(selectedRingtonePaths))
-            ringtoneLauncher.launch(intent)
+            intent.putExtra("alarm_id", editingAlarmId)
+            startActivity(intent)
         }
 
         editingAlarmId = intent.getIntExtra("alarm_id", -1)
@@ -171,6 +158,18 @@ class AlarmEditActivity : AppCompatActivity() {
 
             setResult(RESULT_OK)
             finish()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (editingAlarmId != -1) {
+            val alarm = AlarmStorage.getAlarms(this).firstOrNull { it.id == editingAlarmId }
+            alarm?.let {
+                selectedRingtonePaths.clear()
+                selectedRingtonePaths.addAll(it.ringtonePaths)
+                updateRingtoneButton()
+            }
         }
     }
 

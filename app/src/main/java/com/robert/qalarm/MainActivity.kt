@@ -1,5 +1,6 @@
 package com.robert.qalarm
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
@@ -19,11 +20,9 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val PREFS_NAME = "QRAlarmPrefs"
-        const val KEY_QR_CODE = "qr_code_value"
         const val KEY_REPEAT_DAYS = "repeat_days"
         const val KEY_ALARM_HOUR = "alarm_hour"
         const val KEY_ALARM_MINUTE = "alarm_minute"
-        const val KEY_RINGTONES = "ringtone_list"
     }
 
     private val editAlarmLauncher = registerForActivityResult(
@@ -67,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         return (value * resources.displayMetrics.density).toInt()
     }
 
+    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private fun refreshAlarmList() {
         val container = findViewById<LinearLayout>(R.id.alarmListContainer)
         container.removeAllViews()
