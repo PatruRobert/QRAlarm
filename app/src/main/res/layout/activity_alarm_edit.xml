@@ -133,43 +133,75 @@
                 <CheckBox android:id="@+id/cbMon"
                     android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="M"
+                    android:textSize="11sp"
                     android:textColor="@color/text_primary"
-                    android:buttonTint="@color/accent"/>
+                    android:buttonTint="@color/accent"
+                    android:minWidth="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbTue"
                     android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="T"
+                    android:textSize="11sp"
                     android:textColor="@color/text_primary"
-                    android:buttonTint="@color/accent"/>
+                    android:buttonTint="@color/accent"
+                    android:minWidth="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbWed"
                     android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="W"
+                    android:textSize="11sp"
                     android:textColor="@color/text_primary"
-                    android:buttonTint="@color/accent"/>
+                    android:buttonTint="@color/accent"
+                    android:minWidth="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbThu"
                     android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="T"
+                    android:textSize="11sp"
                     android:textColor="@color/text_primary"
-                    android:buttonTint="@color/accent"/>
+                    android:buttonTint="@color/accent"
+                    android:minWidth="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbFri"
                     android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="F"
+                    android:textSize="11sp"
                     android:textColor="@color/text_primary"
-                    android:buttonTint="@color/accent"/>
+                    android:buttonTint="@color/accent"
+                    android:minWidth="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbSat"
                     android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="S"
+                    android:textSize="11sp"
                     android:textColor="@color/text_primary"
-                    android:buttonTint="@color/accent"/>
+                    android:buttonTint="@color/accent"
+                    android:minWidth="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbSun"
                     android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="S"
+                    android:textSize="11sp"
                     android:textColor="@color/text_primary"
-                    android:buttonTint="@color/accent"/>
+                    android:buttonTint="@color/accent"
+                    android:minWidth="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbWeekly"
                     android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="All"
+                    android:textSize="11sp"
                     android:textColor="@color/text_primary"
-                    android:buttonTint="@color/accent"/>
+                    android:buttonTint="@color/accent"
+                    android:minWidth="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"/>
 
             </LinearLayout>
         </LinearLayout>

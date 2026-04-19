@@ -63,6 +63,10 @@ class MainActivity : AppCompatActivity() {
         refreshAlarmList()
     }
 
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
+    }
+
     private fun refreshAlarmList() {
         val container = findViewById<LinearLayout>(R.id.alarmListContainer)
         container.removeAllViews()
@@ -76,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                 gravity = Gravity.CENTER
                 setTextColor(resources.getColor(R.color.text_secondary, theme))
                 textSize = 16f
-                setPadding(0, 64, 0, 64)
+                setPadding(0, dp(48), 0, dp(48))
             }
             container.addView(empty)
             return
@@ -86,13 +90,13 @@ class MainActivity : AppCompatActivity() {
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(20, 20, 20, 20)
+                setPadding(dp(12), dp(12), dp(12), dp(12))
                 background = resources.getDrawable(R.drawable.bg_card, theme)
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                params.bottomMargin = 10
+                params.bottomMargin = dp(8)
                 layoutParams = params
                 isClickable = true
                 isFocusable = true
@@ -150,6 +154,11 @@ class MainActivity : AppCompatActivity() {
                 textSize = 20f
                 setTextColor(resources.getColor(R.color.text_secondary, theme))
                 background = null
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                layoutParams = params
                 setOnClickListener {
                     val popup = android.widget.PopupMenu(this@MainActivity, this)
                     popup.menu.add(0, 1, 0, "Duplicate")
@@ -157,22 +166,28 @@ class MainActivity : AppCompatActivity() {
                     popup.setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             1 -> {
-                                // Duplicate
                                 val newAlarm = alarm.copy(
                                     id = AlarmStorage.generateId(this@MainActivity)
                                 )
                                 AlarmStorage.addAlarm(this@MainActivity, newAlarm)
                                 AlarmScheduler.schedule(this@MainActivity, newAlarm)
                                 refreshAlarmList()
-                                Toast.makeText(this@MainActivity, "Alarm duplicated", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Alarm duplicated",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 true
                             }
                             2 -> {
-                                // Delete
                                 AlarmScheduler.cancel(this@MainActivity, alarm.id)
                                 AlarmStorage.removeAlarm(this@MainActivity, alarm.id)
                                 refreshAlarmList()
-                                Toast.makeText(this@MainActivity, "Alarm removed", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Alarm removed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 true
                             }
                             else -> false

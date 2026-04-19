@@ -1,7 +1,5 @@
 package com.robert.qalarm
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
@@ -13,58 +11,38 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import java.io.File
-import android.content.Intent
 
 @androidx.camera.core.ExperimentalGetImage
 class RingtonePickerActivity : AppCompatActivity() {
 
     private var previewPlayer: MediaPlayer? = null
     private val selectedPaths = mutableSetOf<String>()
+    private val checkboxes = mutableListOf<Pair<CheckBox, String>>()
+    private lateinit var selectAllCheckbox: CheckBox
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Load previously saved ringtones
         val prefs = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE)
-        val preselected = intent.getStringArrayListExtra("preselected_paths") ?: arrayListOf()
-        selectedPaths.addAll(preselected)
+        val alarmId = intent.getIntExtra("alarm_id", -1)
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_MEDIA_AUDIO),
-                200
-            )
-        } else {
-            buildUI()
+        if (alarmId != -1) {
+            val alarm = AlarmStorage.getAlarms(this).firstOrNull { it.id == alarmId }
+            alarm?.ringtonePaths?.let { selectedPaths.addAll(it) }
         }
+
+        buildUI(alarmId)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 200 && grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            buildUI()
-        } else {
-            Toast.makeText(this, "Storage permission required", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-    }
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
-    private fun buildUI() {
+    private fun buildUI(alarmId: Int) {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(resources.getColor(R.color.bg_primary, theme))
-            setPadding(24, 48, 24, 24)
+            setPadding(dp(24), dp(48), dp(24), dp(24))
         }
 
         val title = TextView(this).apply {
@@ -78,16 +56,54 @@ class RingtonePickerActivity : AppCompatActivity() {
         val divider = android.view.View(this).apply {
             setBackgroundColor(resources.getColor(R.color.border, theme))
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 1
-            ).also { it.topMargin = 12; it.bottomMargin = 32 }
+                LinearLayout.LayoutParams.MATCH_PARENT, dp(1)
+            ).also { it.topMargin = dp(12); it.bottomMargin = dp(24) }
         }
 
         val hint = TextView(this).apply {
             text = "Place MP3 files in Internal Storage → QRAlarm"
             textSize = 13f
             setTextColor(resources.getColor(R.color.text_secondary, theme))
-            setPadding(0, 0, 0, 24)
+            setPadding(0, 0, 0, dp(16))
         }
+
+        // Select All row
+        val selectAllRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setBackgroundColor(resources.getColor(R.color.bg_elevated, theme))
+            setPadding(dp(16), dp(12), dp(16), dp(12))
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.bottomMargin = dp(8)
+            layoutParams = params
+        }
+
+        selectAllCheckbox = CheckBox(this).apply {
+            isChecked = true
+            buttonTint = android.content.res.ColorStateList.valueOf(
+                resources.getColor(R.color.accent, theme)
+            )
+            setOnCheckedChangeListener { _, checked ->
+                checkboxes.forEach { (cb, path) ->
+                    cb.isChecked = checked
+                    if (checked) selectedPaths.add(path)
+                    else selectedPaths.remove(path)
+                }
+            }
+        }
+
+        val selectAllLabel = TextView(this).apply {
+            text = "Select All"
+            textSize = 15f
+            setTextColor(resources.getColor(R.color.text_primary, theme))
+            setPadding(dp(12), 0, 0, 0)
+        }
+
+        selectAllRow.addView(selectAllCheckbox)
+        selectAllRow.addView(selectAllLabel)
 
         val scrollView = ScrollView(this).apply {
             layoutParams = LinearLayout.LayoutParams(
@@ -107,18 +123,21 @@ class RingtonePickerActivity : AppCompatActivity() {
             letterSpacing = 0.15f
             setTextColor(resources.getColor(R.color.bg_primary, theme))
             background = resources.getDrawable(R.drawable.bg_button_accent, theme)
-            layoutParams = LinearLayout.LayoutParams(
+            val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                52
-            ).also { it.topMargin = 16 }
-            setOnClickListener {
-                saveBundle()
-            }
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.topMargin = dp(16)
+            params.bottomMargin = dp(24)
+            setPadding(0, dp(14), 0, dp(14))
+            layoutParams = params
+            setOnClickListener { saveBundle(alarmId) }
         }
 
         root.addView(title)
         root.addView(divider)
         root.addView(hint)
+        root.addView(selectAllRow)
         root.addView(scrollView)
         root.addView(saveBtn)
 
@@ -127,10 +146,7 @@ class RingtonePickerActivity : AppCompatActivity() {
     }
 
     private fun populateList(container: LinearLayout) {
-        val folder = File(
-            Environment.getExternalStorageDirectory(),
-            "QRAlarm"
-        )
+        val folder = File(Environment.getExternalStorageDirectory(), "QRAlarm")
 
         if (!folder.exists() || !folder.isDirectory) {
             val empty = TextView(this).apply {
@@ -138,7 +154,7 @@ class RingtonePickerActivity : AppCompatActivity() {
                 textSize = 14f
                 gravity = Gravity.CENTER
                 setTextColor(resources.getColor(R.color.text_secondary, theme))
-                setPadding(0, 48, 0, 0)
+                setPadding(0, dp(48), 0, 0)
             }
             container.addView(empty)
             return
@@ -152,7 +168,7 @@ class RingtonePickerActivity : AppCompatActivity() {
                 textSize = 14f
                 gravity = Gravity.CENTER
                 setTextColor(resources.getColor(R.color.text_secondary, theme))
-                setPadding(0, 48, 0, 0)
+                setPadding(0, dp(48), 0, 0)
             }
             container.addView(empty)
             return
@@ -163,32 +179,48 @@ class RingtonePickerActivity : AppCompatActivity() {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 background = resources.getDrawable(R.drawable.bg_card, theme)
-                setPadding(16, 16, 16, 16)
+                setPadding(dp(16), dp(16), dp(16), dp(16))
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                params.bottomMargin = 10
+                params.bottomMargin = dp(8)
                 layoutParams = params
             }
 
             val checkbox = CheckBox(this).apply {
                 isChecked = selectedPaths.contains(file.absolutePath)
-                setButtonTintList(android.content.res.ColorStateList.valueOf(
+                buttonTint = android.content.res.ColorStateList.valueOf(
                     resources.getColor(R.color.accent, theme)
-                ))
+                )
                 setOnCheckedChangeListener { _, checked ->
                     if (checked) selectedPaths.add(file.absolutePath)
-                    else selectedPaths.remove(file.absolutePath)
+                    else {
+                        selectedPaths.remove(file.absolutePath)
+                        // Uncheck select all if any item unchecked
+                        selectAllCheckbox.setOnCheckedChangeListener(null)
+                        selectAllCheckbox.isChecked = false
+                        selectAllCheckbox.setOnCheckedChangeListener { _, all ->
+                            checkboxes.forEach { (cb, path) ->
+                                cb.isChecked = all
+                                if (all) selectedPaths.add(path)
+                                else selectedPaths.remove(path)
+                            }
+                        }
+                    }
                 }
             }
+
+            checkboxes.add(Pair(checkbox, file.absolutePath))
 
             val nameText = TextView(this).apply {
                 text = file.nameWithoutExtension
                 textSize = 15f
                 setTextColor(resources.getColor(R.color.text_primary, theme))
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                setPadding(12, 0, 0, 0)
+                layoutParams = LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                )
+                setPadding(dp(12), 0, 0, 0)
             }
 
             val previewBtn = Button(this).apply {
@@ -196,6 +228,11 @@ class RingtonePickerActivity : AppCompatActivity() {
                 textSize = 14f
                 setTextColor(resources.getColor(R.color.accent, theme))
                 background = resources.getDrawable(R.drawable.bg_button_ghost, theme)
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                layoutParams = params
                 setOnClickListener {
                     previewPlayer?.stop()
                     previewPlayer?.release()
@@ -213,12 +250,29 @@ class RingtonePickerActivity : AppCompatActivity() {
             row.addView(previewBtn)
             container.addView(row)
         }
+
+        // After populating, check if all are selected to sync select all state
+        if (files.isNotEmpty() && selectedPaths.containsAll(files.map { it.absolutePath })) {
+            selectAllCheckbox.isChecked = true
+        }
     }
 
-    private fun saveBundle() {
-        val resultIntent = Intent()
-        resultIntent.putStringArrayListExtra("selected_paths", ArrayList(selectedPaths))
-        setResult(RESULT_OK, resultIntent)
+    private fun saveBundle(alarmId: Int) {
+        if (alarmId != -1) {
+            val alarms = AlarmStorage.getAlarms(this)
+            val alarm = alarms.firstOrNull { it.id == alarmId }
+            if (alarm != null) {
+                val ringtonePath = if (selectedPaths.isNotEmpty())
+                    selectedPaths.random() else null
+                AlarmStorage.updateAlarm(
+                    this,
+                    alarm.copy(
+                        ringtonePaths = selectedPaths.toSet(),
+                        ringtonePath = ringtonePath
+                    )
+                )
+            }
+        }
         Toast.makeText(this, "${selectedPaths.size} ringtone(s) saved", Toast.LENGTH_SHORT).show()
         finish()
     }

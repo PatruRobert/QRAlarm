@@ -21,7 +21,15 @@ class AlarmRingActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
+            stopService(Intent(this, AlarmService::class.java))
             finish()
+        } else {
+            // Timer expired — restart the alarm service so sound resumes
+            val serviceIntent = Intent(this, AlarmService::class.java).apply {
+                putExtra("qr_code", intent.getStringExtra("qr_code"))
+                putExtra("ringtone_path", intent.getStringExtra("ringtone_path"))
+            }
+            startForegroundService(serviceIntent)
         }
     }
 
@@ -85,7 +93,28 @@ class AlarmRingActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        wakeLock?.release()
+        if (wakeLock?.isHeld == true) {
+            wakeLock?.release()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // Restart sound when ring screen comes back to front
+        val serviceIntent = Intent(this, AlarmService::class.java).apply {
+            putExtra("qr_code", intent.getStringExtra("qr_code"))
+            putExtra("ringtone_path", intent.getStringExtra("ringtone_path"))
+        }
+        startForegroundService(serviceIntent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Resume sound when returning from QR scan screen
+        val resumeIntent = Intent(this, AlarmService::class.java)
+        resumeIntent.action = "RESUME"
+        startService(resumeIntent)
     }
 
     override fun onDestroy() {

@@ -86,7 +86,21 @@ class QRScanActivity : AppCompatActivity() {
             }
             override fun onFinish() {
                 if (!alarmDismissed) {
-                    resumeAlarm()
+                    // Restart service directly — don't rely on AlarmRingActivity being alive
+                    val serviceIntent = Intent(applicationContext, AlarmService::class.java).apply {
+                        putExtra("qr_code", intent.getStringExtra("qr_code"))
+                        putExtra("ringtone_path", intent.getStringExtra("ringtone_path"))
+                    }
+                    applicationContext.startForegroundService(serviceIntent)
+
+                    // Relaunch ring screen
+                    val ringIntent = Intent(applicationContext, AlarmRingActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        putExtra("qr_code", intent.getStringExtra("qr_code"))
+                        putExtra("ringtone_path", intent.getStringExtra("ringtone_path"))
+                    }
+                    applicationContext.startActivity(ringIntent)
+
                     setResult(RESULT_CANCELED)
                     finish()
                 }

@@ -116,8 +116,11 @@ class AlarmService : Service() {
         getSystemService(NotificationManager::class.java)
             .createNotificationChannel(channel)
 
-        val fullScreenIntent = Intent(this, AlarmRingActivity::class.java)
-        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val fullScreenIntent = Intent(this, AlarmRingActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra("qr_code", intent?.getStringExtra("qr_code"))
+            putExtra("ringtone_path", intent?.getStringExtra("ringtone_path"))
+        }
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this, 0, fullScreenIntent,
