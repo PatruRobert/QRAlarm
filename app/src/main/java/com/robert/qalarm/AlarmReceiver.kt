@@ -40,7 +40,7 @@ class AlarmReceiver : BroadcastReceiver() {
         if (alarmId != -1) {
             val alarms = AlarmStorage.getAlarms(context)
             val alarm = alarms.firstOrNull { it.id == alarmId }
-            if (alarm != null && alarm.repeatDays.isNotEmpty()) {
+            if (alarm != null && alarm.repeatDays.isNotEmpty() && alarm.isActive) {
                 AlarmScheduler.schedule(context, alarm)
             }
         }

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(./gradlew build *)",
+      "Bash(./gradlew assembleDebug lintDebug)",
+      "Bash(./gradlew compileDebugKotlin)",
+      "Bash(gradlew.bat --stop)",
+      "Bash(cmd.exe *)",
+      "PowerShell(& \"H:\\\\Android_Projects\\\\QAlarm\\\\gradlew.bat\" --stop)"
+    ]
+  }
+}

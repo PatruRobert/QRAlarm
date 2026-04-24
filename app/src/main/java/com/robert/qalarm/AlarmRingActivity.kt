@@ -15,6 +15,13 @@ import androidx.appcompat.app.AppCompatActivity
 @androidx.camera.core.ExperimentalGetImage
 class AlarmRingActivity : AppCompatActivity() {
 
+    companion object {
+        // Set by QRScanActivity before finish() so onResume() doesn't send RESUME to the
+        // service — onResume fires before the launcher result callback, creating a race that
+        // restarted audio even after stopService() had been called.
+        var dismissedByQR = false
+    }
+
     private var wakeLock: PowerManager.WakeLock? = null
 
     private val qrScanLauncher = registerForActivityResult(
@@ -111,7 +118,10 @@ class AlarmRingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Resume sound when returning from QR scan screen
+        if (dismissedByQR) {
+            dismissedByQR = false
+            return
+        }
         val resumeIntent = Intent(this, AlarmService::class.java)
         resumeIntent.action = "RESUME"
         startService(resumeIntent)

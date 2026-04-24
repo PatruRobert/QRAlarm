@@ -2,6 +2,8 @@ package com.robert.qalarm
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
@@ -10,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
@@ -197,11 +200,33 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            val toggleSwitch = SwitchCompat(this).apply {
+                isChecked = alarm.isActive
+                thumbTintList = ColorStateList(
+                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                    intArrayOf(Color.parseColor("#00D4AA"), Color.parseColor("#888888"))
+                )
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { marginEnd = dp(4) }
+                setOnCheckedChangeListener { _, isChecked ->
+                    val updated = alarm.copy(isActive = isChecked)
+                    if (isChecked) {
+                        AlarmScheduler.schedule(this@MainActivity, updated)
+                    } else {
+                        AlarmScheduler.cancel(this@MainActivity, alarm.id)
+                    }
+                    AlarmStorage.updateAlarm(this@MainActivity, updated)
+                }
+            }
+
             infoLayout.addView(timeText)
             infoLayout.addView(labelText)
             infoLayout.addView(daysText)
             infoLayout.addView(qrIndicator)
             card.addView(infoLayout)
+            card.addView(toggleSwitch)
             card.addView(menuBtn)
             container.addView(card)
         }

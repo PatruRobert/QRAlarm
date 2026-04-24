@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.Gravity
 import android.widget.Button
 import android.widget.CheckBox
@@ -82,15 +83,14 @@ class RingtonePickerActivity : AppCompatActivity() {
         }
 
         selectAllCheckbox = CheckBox(this).apply {
-            isChecked = true
+            isChecked = false
             buttonTintList = android.content.res.ColorStateList.valueOf(
                 resources.getColor(R.color.accent, theme)
             )
             setOnCheckedChangeListener { _, checked ->
                 checkboxes.forEach { (cb, path) ->
+                    if (checked) selectedPaths.add(path) else selectedPaths.remove(path)
                     cb.isChecked = checked
-                    if (checked) selectedPaths.add(path)
-                    else selectedPaths.remove(path)
                 }
             }
         }
@@ -259,6 +259,7 @@ class RingtonePickerActivity : AppCompatActivity() {
     }
 
     private fun saveBundle(alarmId: Int) {
+        Log.d("RingtonePicker", "saveBundle: selectedPaths.size=${selectedPaths.size} paths=$selectedPaths")
         if (alarmId != -1) {
             val alarms = AlarmStorage.getAlarms(this)
             val alarm = alarms.firstOrNull { it.id == alarmId }

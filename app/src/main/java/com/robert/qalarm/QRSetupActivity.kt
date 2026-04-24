@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.widget.FrameLayout
@@ -67,10 +68,16 @@ class QRSetupActivity : AppCompatActivity() {
             )
         }
 
+        val padding = (12 * density).toInt()
         val torchBtn = ImageButton(this).apply {
             setImageResource(android.R.drawable.ic_menu_camera)
             imageTintList = ColorStateList.valueOf(Color.parseColor("#666666"))
-            background = null
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(Color.parseColor("#1F1F1F"))
+                setStroke((1 * density).toInt(), Color.parseColor("#2A2A2A"))
+            }
+            setPadding(padding, padding, padding, padding)
             layoutParams = FrameLayout.LayoutParams(btnSize, btnSize).apply {
                 gravity = Gravity.BOTTOM or Gravity.END
                 setMargins(0, 0, margin, margin)
