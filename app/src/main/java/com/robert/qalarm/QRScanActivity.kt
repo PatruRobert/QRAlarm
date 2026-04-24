@@ -3,15 +3,18 @@ package com.robert.qalarm
 import android.content.Intent
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.Gravity
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
-import androidx.camera.core.TorchState
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
@@ -57,6 +60,10 @@ class QRScanActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
+        val density = resources.displayMetrics.density
+        val btnSize = (56 * density).toInt()
+        val margin = (16 * density).toInt()
+
         val container = FrameLayout(this)
         container.setBackgroundColor(resources.getColor(R.color.bg_primary, theme))
 
@@ -74,15 +81,26 @@ class QRScanActivity : AppCompatActivity() {
             setPadding(32, 64, 32, 0)
         }
 
+        val torchBtn = ImageButton(this).apply {
+            setImageResource(android.R.drawable.ic_menu_camera)
+            imageTintList = ColorStateList.valueOf(Color.parseColor("#666666"))
+            background = null
+            layoutParams = FrameLayout.LayoutParams(btnSize, btnSize).apply {
+                gravity = Gravity.BOTTOM or Gravity.END
+                setMargins(0, 0, margin, margin)
+            }
+        }
+
         container.addView(previewView)
         container.addView(timerText)
+        container.addView(torchBtn)
         setContentView(container)
 
         // 30 second countdown — if it expires, close camera and resume alarm
         countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secs = millisUntilFinished / 1000
-                timerText.text = "00:${String.format(java.util.Locale.getDefault(), "%02d", secs)}"
+                timerText.text = getString(R.string.timer_format, secs)
             }
             override fun onFinish() {
                 if (!alarmDismissed) {
@@ -148,10 +166,14 @@ class QRScanActivity : AppCompatActivity() {
                 preview,
                 analyzer
             )
-            camera.cameraInfo.torchState.observe(this) { state ->
-                if (state == TorchState.OFF) {
-                    camera.cameraControl.enableTorch(true)
-                }
+
+            var torchOn = false
+            torchBtn.setOnClickListener {
+                torchOn = !torchOn
+                camera.cameraControl.enableTorch(torchOn)
+                torchBtn.imageTintList = ColorStateList.valueOf(
+                    Color.parseColor(if (torchOn) "#00D4AA" else "#666666")
+                )
             }
         }, ContextCompat.getMainExecutor(this))
     }

@@ -82,8 +82,8 @@ class AlarmEditActivity : AppCompatActivity() {
 
         editingAlarmId = intent.getIntExtra("alarm_id", -1)
         if (editingAlarmId != -1) {
-            tvTitle.text = "EDIT ALARM"
-            btnSave.text = "UPDATE ALARM"
+            tvTitle.text = getString(R.string.alarm_edit_title_edit)
+            btnSave.text = getString(R.string.btn_update_alarm)
             val alarm = AlarmStorage.getAlarms(this).firstOrNull { it.id == editingAlarmId }
             alarm?.let {
                 npHour.value = it.hour
@@ -173,10 +173,9 @@ class AlarmEditActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun updateQRButton() {
         val btn = findViewById<Button>(R.id.btnSetQR)
-        btn.text = if (currentQRCode != null) "QR SET ✓" else "SET QR CODE"
+        btn.text = getString(if (currentQRCode != null) R.string.qr_set else R.string.qr_not_set)
     }
 
     @SuppressLint("SetTextI18n")

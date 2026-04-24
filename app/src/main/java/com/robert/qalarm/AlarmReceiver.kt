@@ -20,6 +20,7 @@ class AlarmReceiver : BroadcastReceiver() {
             return
         }
 
+        val alarmId = intent.getIntExtra("alarm_id", -1)
         val ringtonePath = intent.getStringExtra("ringtone_path")
         val qrCode = intent.getStringExtra("qr_code")
 
@@ -35,13 +36,13 @@ class AlarmReceiver : BroadcastReceiver() {
         }
         context.startActivity(activityIntent)
 
-        val prefs = context.getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
-        val repeatDays = prefs.getStringSet(MainActivity.KEY_REPEAT_DAYS, emptySet()) ?: emptySet()
-        val hour = prefs.getInt(MainActivity.KEY_ALARM_HOUR, -1)
-        val minute = prefs.getInt(MainActivity.KEY_ALARM_MINUTE, -1)
-
-        if (repeatDays.isNotEmpty() && hour >= 0 && minute >= 0) {
-            scheduleNextRepeat(context, hour, minute, repeatDays)
+        // Reschedule using per-alarm storage
+        if (alarmId != -1) {
+            val alarms = AlarmStorage.getAlarms(context)
+            val alarm = alarms.firstOrNull { it.id == alarmId }
+            if (alarm != null && alarm.repeatDays.isNotEmpty()) {
+                AlarmScheduler.schedule(context, alarm)
+            }
         }
     }
 

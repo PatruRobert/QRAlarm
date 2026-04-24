@@ -2,7 +2,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_primary"
     android:fillViewport="true">
 
     <LinearLayout
@@ -15,7 +14,7 @@
             android:id="@+id/tvEditTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NEW ALARM"
+            android:text="@string/alarm_edit_title_new"
             android:textColor="@color/accent"
             android:textSize="12sp"
             android:letterSpacing="0.3"
@@ -40,7 +39,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TIME"
+                android:text="@string/section_time"
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:letterSpacing="0.2"
@@ -60,7 +59,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=":"
+                    android:text="@string/time_separator"
                     android:textSize="40sp"
                     android:textColor="@color/accent"
                     android:paddingHorizontal="16dp"
@@ -86,7 +85,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="LABEL"
+                android:text="@string/section_label"
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:letterSpacing="0.2"
@@ -96,8 +95,9 @@
                 android:id="@+id/etLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="e.g. Work, Gym..."
+                android:hint="@string/alarm_label_hint"
                 android:inputType="text"
+                android:importantForAutofill="no"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_secondary"
                 android:background="@drawable/bg_input"
@@ -118,7 +118,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="REPEAT"
+                android:text="@string/section_repeat"
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:letterSpacing="0.2"
@@ -132,7 +132,7 @@
 
                 <CheckBox android:id="@+id/cbMon"
                     android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="M"
+                    android:layout_weight="1" android:text="@string/day_mon"
                     android:textSize="11sp"
                     android:textColor="@color/text_primary"
                     android:buttonTint="@color/accent"
@@ -141,7 +141,7 @@
                     android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbTue"
                     android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="T"
+                    android:layout_weight="1" android:text="@string/day_tue"
                     android:textSize="11sp"
                     android:textColor="@color/text_primary"
                     android:buttonTint="@color/accent"
@@ -150,7 +150,7 @@
                     android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbWed"
                     android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="W"
+                    android:layout_weight="1" android:text="@string/day_wed"
                     android:textSize="11sp"
                     android:textColor="@color/text_primary"
                     android:buttonTint="@color/accent"
@@ -159,7 +159,7 @@
                     android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbThu"
                     android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="T"
+                    android:layout_weight="1" android:text="@string/day_thu"
                     android:textSize="11sp"
                     android:textColor="@color/text_primary"
                     android:buttonTint="@color/accent"
@@ -168,7 +168,7 @@
                     android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbFri"
                     android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="F"
+                    android:layout_weight="1" android:text="@string/day_fri"
                     android:textSize="11sp"
                     android:textColor="@color/text_primary"
                     android:buttonTint="@color/accent"
@@ -177,7 +177,7 @@
                     android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbSat"
                     android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="S"
+                    android:layout_weight="1" android:text="@string/day_sat"
                     android:textSize="11sp"
                     android:textColor="@color/text_primary"
                     android:buttonTint="@color/accent"
@@ -186,7 +186,7 @@
                     android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbSun"
                     android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="S"
+                    android:layout_weight="1" android:text="@string/day_sun"
                     android:textSize="11sp"
                     android:textColor="@color/text_primary"
                     android:buttonTint="@color/accent"
@@ -195,7 +195,7 @@
                     android:paddingEnd="0dp"/>
                 <CheckBox android:id="@+id/cbWeekly"
                     android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="All"
+                    android:layout_weight="1" android:text="@string/day_all"
                     android:textSize="11sp"
                     android:textColor="@color/text_primary"
                     android:buttonTint="@color/accent"
@@ -210,7 +210,7 @@
             android:id="@+id/btnSetQR"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="SET QR CODE"
+            android:text="@string/qr_not_set"
             android:textColor="@color/bg_primary"
             android:textSize="12sp"
             android:letterSpacing="0.1"
@@ -221,7 +221,7 @@
             android:id="@+id/btnRingtones"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="ADD RINGTONES"
+            android:text="@string/btn_add_ringtones"
             android:textColor="@color/bg_primary"
             android:textSize="12sp"
             android:letterSpacing="0.1"
@@ -232,7 +232,7 @@
             android:id="@+id/btnSaveAlarm"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="SAVE ALARM"
+            android:text="@string/btn_save_alarm"
             android:textColor="@color/bg_primary"
             android:textSize="13sp"
             android:letterSpacing="0.15"

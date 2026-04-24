@@ -1,8 +1,30 @@
 <resources>
     <string name="app_name">QAlarm</string>
-    <string name="set_alarm">Set Alarm</string>
-    <string name="scan_qr_to_dismiss">Scan QR to Dismiss</string>
-    <string name="wake_up">WAKE UP!</string>
-    <string name="qr_set">QR code is set ✓</string>
-    <string name="qr_not_set">No QR code set</string>
+    <string name="app_header">QRALARM</string>
+    <string name="alarm_edit_title_new">NEW ALARM</string>
+    <string name="alarm_edit_title_edit">EDIT ALARM</string>
+    <string name="section_time">TIME</string>
+    <string name="time_separator">:</string>
+    <string name="section_label">LABEL</string>
+    <string name="alarm_label_hint">e.g. Work, Gym&#8230;</string>
+    <string name="section_repeat">REPEAT</string>
+    <string name="day_mon">M</string>
+    <string name="day_tue">T</string>
+    <string name="day_wed">W</string>
+    <string name="day_thu">T</string>
+    <string name="day_fri">F</string>
+    <string name="day_sat">S</string>
+    <string name="day_sun">S</string>
+    <string name="day_all">All</string>
+    <string name="qr_set">QR SET ✓</string>
+    <string name="qr_not_set">SET QR CODE</string>
+    <string name="btn_add_ringtones">ADD RINGTONES</string>
+    <string name="btn_save_alarm">SAVE ALARM</string>
+    <string name="btn_update_alarm">UPDATE ALARM</string>
+    <string name="wake_up">WAKE UP</string>
+    <string name="alarm_warning_icon">⚠</string>
+    <string name="scan_qr_to_dismiss">Scan your QR code to dismiss</string>
+    <string name="btn_scan_qr_code">SCAN QR CODE</string>
+    <string name="fab_add_description">Add alarm</string>
+    <string name="timer_format">00:%1$02d</string>
 </resources>

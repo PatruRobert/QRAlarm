@@ -3,7 +3,12 @@ package com.robert.qalarm
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
+import android.widget.FrameLayout
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -49,8 +54,32 @@ class QRSetupActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        val previewView = PreviewView(this)
-        setContentView(previewView)
+        val density = resources.displayMetrics.density
+        val btnSize = (56 * density).toInt()
+        val margin = (16 * density).toInt()
+
+        val container = FrameLayout(this)
+
+        val previewView = PreviewView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+
+        val torchBtn = ImageButton(this).apply {
+            setImageResource(android.R.drawable.ic_menu_camera)
+            imageTintList = ColorStateList.valueOf(Color.parseColor("#666666"))
+            background = null
+            layoutParams = FrameLayout.LayoutParams(btnSize, btnSize).apply {
+                gravity = Gravity.BOTTOM or Gravity.END
+                setMargins(0, 0, margin, margin)
+            }
+        }
+
+        container.addView(previewView)
+        container.addView(torchBtn)
+        setContentView(container)
 
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
@@ -94,10 +123,14 @@ class QRSetupActivity : AppCompatActivity() {
                 preview,
                 analyzer
             )
-            camera.cameraInfo.torchState.observe(this) { state ->
-                if (state == androidx.camera.core.TorchState.OFF) {
-                    camera.cameraControl.enableTorch(true)
-                }
+
+            var torchOn = false
+            torchBtn.setOnClickListener {
+                torchOn = !torchOn
+                camera.cameraControl.enableTorch(torchOn)
+                torchBtn.imageTintList = ColorStateList.valueOf(
+                    Color.parseColor(if (torchOn) "#00D4AA" else "#666666")
+                )
             }
         }, ContextCompat.getMainExecutor(this))
     }

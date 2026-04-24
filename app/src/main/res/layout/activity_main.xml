@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/bg_primary">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Header -->
     <LinearLayout
@@ -14,7 +11,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="QRALARM"
+            android:text="@string/app_header"
             android:textColor="@color/accent"
             android:textSize="12sp"
             android:letterSpacing="0.3"
@@ -46,7 +43,7 @@
 
     </ScrollView>
 
-    <!-- FAB + button -->
+    <!-- FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddAlarm"
         android:layout_width="wrap_content"
@@ -55,6 +52,7 @@
         android:layout_marginBottom="32dp"
         android:src="@android:drawable/ic_input_add"
         android:backgroundTint="@color/accent"
-        android:tint="@color/bg_primary"/>
+        android:tint="@color/bg_primary"
+        android:contentDescription="@string/fab_add_description"/>
 
-</FrameLayout>
+</merge>
