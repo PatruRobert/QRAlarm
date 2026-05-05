@@ -1,18 +1,36 @@
-*.iml
-.gradle
-/local.properties
-.idea/
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
+# Build outputs
 /build
+app/build/
+
+# Gradle
+.gradle/
+
+# Local config — machine-specific, never commit
+local.properties
+secrets.properties
+
+# IDE — IntelliJ / Android Studio
+*.iml
+.idea/
+
+# Signing keys — NEVER commit
+*.jks
+*.keystore
+release.properties
+keystore.properties
+
+# Google services
+google-services.json
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Android build artifacts
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# Sensitive personal files
 .github-recovery-codes.txt
-*.txt

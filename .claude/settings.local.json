@@ -9,7 +9,22 @@
       "Bash(cmd.exe *)",
       "PowerShell(& \"H:\\\\Android_Projects\\\\QAlarm\\\\gradlew.bat\" --stop)",
       "Bash(Get-ChildItem -Path \"h:\\\\Android_Projects\\\\QAlarm\" -Recurse -Include \"*.kt\", \"*.xml\", \"*.gradle\", \"*.gradle.kts\")",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(Test-Path \"h:\\\\Android_Projects\\\\QAlarm\\\\secrets.properties\")",
+      "Bash(ls \"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\\\\bin\\\\jlink.exe\" 2>/dev/null && echo \"found\" || echo \"not found\")",
+      "Read(//c/Program Files/Android/Android Studio/jbr/bin/**)",
+      "Bash(.\\\\gradlew.bat installDebug)",
+      "PowerShell(& \"H:\\\\AndroidSDK\\\\platform-tools\\\\adb.exe\" logcat -s DropboxManager -d 2>&1)",
+      "PowerShell(& \"H:\\\\AndroidSDK\\\\platform-tools\\\\adb.exe\" logcat -c 2>&1)",
+      "Bash(.\\\\gradlew.bat clean *)",
+      "Bash(adb logcat *)",
+      "PowerShell(adb logcat -s \"DropboxManager\" --format=threadtime 2>&1)",
+      "PowerShell(Get-Command adb -ErrorAction SilentlyContinue)",
+      "PowerShell($env:ANDROID_HOME)",
+      "Bash(find ~ -name \"adb\" -type f 2>/dev/null | head -5)",
+      "Read(//c/Users/rroob/**)",
+      "PowerShell(& \"H:\\\\AndroidSDK\\\\platform-tools\\\\adb.exe\" logcat --clear)",
+      "Bash(/mnt/h/AndroidSDK/platform-tools/adb.exe logcat *)"
     ]
   }
 }

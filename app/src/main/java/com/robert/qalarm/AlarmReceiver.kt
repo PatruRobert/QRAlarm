@@ -18,8 +18,16 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         val alarmId = intent.getIntExtra("alarm_id", -1)
-        val ringtonePath = intent.getStringExtra("ringtone_path")
         val qrCode = intent.getStringExtra("qr_code")
+
+        val alarms = AlarmStorage.getAlarms(context)
+        val alarm = alarms.firstOrNull { it.id == alarmId }
+
+        // Pick a fresh random ringtone from the full pool on every ring.
+        val ringtonePath = alarm?.ringtonePaths
+            ?.takeIf { it.isNotEmpty() }
+            ?.random()
+            ?: intent.getStringExtra("ringtone_path")
 
         val serviceIntent = Intent(context, AlarmService::class.java).apply {
             putExtra("ringtone_path", ringtonePath)
@@ -33,17 +41,13 @@ class AlarmReceiver : BroadcastReceiver() {
         }
         context.startActivity(activityIntent)
 
-        if (alarmId != -1) {
-            val alarms = AlarmStorage.getAlarms(context)
-            val alarm = alarms.firstOrNull { it.id == alarmId }
-            if (alarm != null && alarm.isActive) {
-                if (alarm.repeatDays.isNotEmpty()) {
-                    // Repeating alarm — schedule the next occurrence.
-                    AlarmScheduler.schedule(context, alarm)
-                } else {
-                    // One-time alarm — mark inactive so the boot receiver doesn't re-fire it.
-                    AlarmStorage.updateAlarm(context, alarm.copy(isActive = false))
-                }
+        if (alarm != null && alarm.isActive) {
+            if (alarm.repeatDays.isNotEmpty()) {
+                // Repeating alarm — schedule the next occurrence.
+                AlarmScheduler.schedule(context, alarm)
+            } else {
+                // One-time alarm — mark inactive so the boot receiver doesn't re-fire it.
+                AlarmStorage.updateAlarm(context, alarm.copy(isActive = false))
             }
         }
     }

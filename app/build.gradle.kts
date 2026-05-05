@@ -1,5 +1,12 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
+}
+
+val secrets = Properties().also { props ->
+    val file = rootProject.file("secrets.properties")
+    if (file.exists()) props.load(file.inputStream())
 }
 
 android {
@@ -18,6 +25,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val appKey = secrets.getProperty("DROPBOX_APP_KEY", "placeholder")
+        buildConfigField("String", "DROPBOX_APP_KEY", "\"$appKey\"")
+        manifestPlaceholders["dropboxAppKey"] = appKey
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -48,4 +63,6 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
+    implementation(libs.dropbox.core.sdk)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
