@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import java.util.Calendar
 
 @androidx.camera.core.ExperimentalGetImage
 class AlarmEditActivity : AppCompatActivity() {
@@ -120,6 +121,20 @@ class AlarmEditActivity : AppCompatActivity() {
 
             val ringtonePath = if (selectedRingtonePaths.isNotEmpty())
                 selectedRingtonePaths.random() else null
+
+            // Warn the user if a one-time alarm will fire tomorrow instead of today.
+            if (repeatDays.isEmpty()) {
+                val now = Calendar.getInstance()
+                val alarmToday = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, hour)
+                    set(Calendar.MINUTE, minute)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                if (alarmToday.timeInMillis <= now.timeInMillis) {
+                    Toast.makeText(this, "Time is in the past — alarm will ring tomorrow.", Toast.LENGTH_SHORT).show()
+                }
+            }
 
             if (editingAlarmId == -1) {
                 val alarm = Alarm(

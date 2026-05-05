@@ -110,25 +110,25 @@ class QRScanActivity : AppCompatActivity() {
                 timerText.text = getString(R.string.timer_format, secs)
             }
             override fun onFinish() {
-                if (!alarmDismissed) {
-                    // Restart service directly — don't rely on AlarmRingActivity being alive
-                    val serviceIntent = Intent(applicationContext, AlarmService::class.java).apply {
-                        putExtra("qr_code", intent.getStringExtra("qr_code"))
-                        putExtra("ringtone_path", intent.getStringExtra("ringtone_path"))
-                    }
-                    applicationContext.startForegroundService(serviceIntent)
+                // Guard against firing after the QR was successfully scanned or the
+                // activity is already finishing (e.g. scan happened at the last second).
+                if (alarmDismissed || isFinishing) return
 
-                    // Relaunch ring screen
-                    val ringIntent = Intent(applicationContext, AlarmRingActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        putExtra("qr_code", intent.getStringExtra("qr_code"))
-                        putExtra("ringtone_path", intent.getStringExtra("ringtone_path"))
-                    }
-                    applicationContext.startActivity(ringIntent)
-
-                    setResult(RESULT_CANCELED)
-                    finish()
+                val serviceIntent = Intent(applicationContext, AlarmService::class.java).apply {
+                    putExtra("qr_code", intent.getStringExtra("qr_code"))
+                    putExtra("ringtone_path", intent.getStringExtra("ringtone_path"))
                 }
+                applicationContext.startForegroundService(serviceIntent)
+
+                val ringIntent = Intent(applicationContext, AlarmRingActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    putExtra("qr_code", intent.getStringExtra("qr_code"))
+                    putExtra("ringtone_path", intent.getStringExtra("ringtone_path"))
+                }
+                applicationContext.startActivity(ringIntent)
+
+                setResult(RESULT_CANCELED)
+                finish()
             }
         }.start()
 
@@ -198,6 +198,6 @@ class QRScanActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
-        executor.shutdown()
+        executor.shutdownNow()
     }
 }

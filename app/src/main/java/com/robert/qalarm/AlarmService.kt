@@ -16,19 +16,18 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
-import androidx.annotation.OptIn
-import androidx.camera.core.ExperimentalGetImage
 import androidx.core.content.edit
 
 class AlarmService : Service() {
 
     private var mediaPlayer: MediaPlayer? = null
+    private var mediaPlayerReady = false
     private var wakeLock: PowerManager.WakeLock? = null
     private val handler = Handler(Looper.getMainLooper())
     private var volumeStep = 0
     private var volumeObserver: android.database.ContentObserver? = null
+    private var volumeObserverRegistered = false
 
-    @OptIn(ExperimentalGetImage::class)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == "PAUSE") {
             mediaPlayer?.pause()
@@ -36,34 +35,17 @@ class AlarmService : Service() {
         }
         if (intent?.action == "RESUME") {
             if (mediaPlayer != null && !mediaPlayer!!.isPlaying) {
-                try {
-                    mediaPlayer?.start()
-                } catch (e: Exception) {
-                    mediaPlayer?.release()
-                    mediaPlayer = null
-                    val prefs = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE)
-                    val path = prefs.getString("last_ringtone_path", null)
-                    mediaPlayer = if (!path.isNullOrEmpty()) {
-                        try {
-                            MediaPlayer().apply {
-                                setDataSource(path)
-                                setAudioAttributes(
-                                    AudioAttributes.Builder()
-                                        .setUsage(AudioAttributes.USAGE_ALARM)
-                                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                        .build()
-                                )
-                                isLooping = true
-                                prepare()
-                                start()
-                            }
-                        } catch (e2: Exception) {
-                            buildDefaultPlayer()
-                        }
-                    } else {
-                        buildDefaultPlayer()
+                if (mediaPlayerReady) {
+                    try {
+                        mediaPlayer?.start()
+                    } catch (e: Exception) {
+                        // Player in bad state — rebuild from last known path
+                        val path = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE)
+                            .getString("last_ringtone_path", null)
+                        startMediaPlayer(path)
                     }
                 }
+                // If not ready yet, setOnPreparedListener will call start() automatically
             }
             return START_STICKY
         }
@@ -80,7 +62,8 @@ class AlarmService : Service() {
         val startVolume = (maxVolume * 0.5f).toInt()
         audioManager.setStreamVolume(AudioManager.STREAM_ALARM, startVolume, 0)
 
-        // Volume enforcement observer
+        // Volume enforcement observer — registered after the ramp so it doesn't
+        // fight the ramp's own setStreamVolume calls.
         volumeObserver = object : android.database.ContentObserver(handler) {
             override fun onChange(selfChange: Boolean) {
                 val am = getSystemService(AUDIO_SERVICE) as AudioManager
@@ -92,7 +75,7 @@ class AlarmService : Service() {
             }
         }
 
-        // Gentle volume ramp 50% to 100% over 30 seconds
+        // Gentle volume ramp 50% → 100% over 30 seconds, then lock volume at max.
         val volumeRunnable = object : Runnable {
             override fun run() {
                 if (volumeStep <= 30) {
@@ -103,12 +86,12 @@ class AlarmService : Service() {
                     volumeStep++
                     handler.postDelayed(this, 1000)
                 } else {
-                    // Ramp complete — now start enforcing volume
                     contentResolver.registerContentObserver(
                         android.provider.Settings.System.CONTENT_URI,
                         true,
                         volumeObserver!!
                     )
+                    volumeObserverRegistered = true
                 }
             }
         }
@@ -128,7 +111,6 @@ class AlarmService : Service() {
             putExtra("qr_code", intent?.getStringExtra("qr_code"))
             putExtra("ringtone_path", intent?.getStringExtra("ringtone_path"))
         }
-
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this, 0, fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -149,15 +131,26 @@ class AlarmService : Service() {
         val ringtonePath = intent?.getStringExtra("ringtone_path")?.takeIf { it.isNotEmpty() }
             ?: prefs.getString("last_ringtone_path", null)
 
-        // Save it so restarts can recover it
         if (!ringtonePath.isNullOrEmpty()) {
             prefs.edit { putString("last_ringtone_path", ringtonePath) }
         }
 
-        mediaPlayer = if (!ringtonePath.isNullOrEmpty()) {
+        startMediaPlayer(ringtonePath)
+
+        return START_STICKY
+    }
+
+    // Builds and starts the media player asynchronously to avoid blocking the main thread.
+    // Falls back to the system default alarm ringtone on any error.
+    private fun startMediaPlayer(path: String?) {
+        mediaPlayerReady = false
+        mediaPlayer?.release()
+        mediaPlayer = null
+
+        if (!path.isNullOrEmpty()) {
             try {
-                MediaPlayer().apply {
-                    setDataSource(ringtonePath)
+                mediaPlayer = MediaPlayer().apply {
+                    setDataSource(path)
                     setAudioAttributes(
                         AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_ALARM)
@@ -165,41 +158,48 @@ class AlarmService : Service() {
                             .build()
                     )
                     isLooping = true
-                    prepare()
-                    start()
+                    setOnPreparedListener { mp ->
+                        mediaPlayerReady = true
+                        try { mp.start() } catch (_: Exception) { }
+                    }
+                    setOnErrorListener { _, _, _ ->
+                        startMediaPlayer(null)
+                        true
+                    }
+                    prepareAsync()
                 }
-            } catch (e: Exception) {
-                buildDefaultPlayer()
+                return
+            } catch (_: Exception) { }
+        }
+
+        // Fall back to system default alarm tone
+        try {
+            val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(applicationContext, alarmUri)
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build()
+                )
+                isLooping = true
+                setOnPreparedListener { mp ->
+                    mediaPlayerReady = true
+                    try { mp.start() } catch (_: Exception) { }
+                }
+                prepareAsync()
             }
-        } else {
-            buildDefaultPlayer()
-        }
-
-        return START_STICKY
-    }
-
-    private fun buildDefaultPlayer(): MediaPlayer {
-        val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-        return MediaPlayer().apply {
-            setDataSource(applicationContext, alarmUri)
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build()
-            )
-            isLooping = true
-            prepare()
-            start()
-        }
+        } catch (_: Exception) { }
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         val restartIntent = Intent(applicationContext, AlarmService::class.java)
+        // FLAG_UPDATE_CURRENT so the PendingIntent remains reusable across multiple task-removed events.
         val pendingIntent = PendingIntent.getService(
             applicationContext, 1, restartIntent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val alarmManager = getSystemService(AlarmManager::class.java)
         alarmManager.set(
@@ -209,15 +209,20 @@ class AlarmService : Service() {
         )
     }
 
-    @OptIn(ExperimentalGetImage::class)
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacksAndMessages(null)
-        volumeObserver?.let { contentResolver.unregisterContentObserver(it) }
-        mediaPlayer?.stop()
+        if (volumeObserverRegistered) {
+            volumeObserver?.let { contentResolver.unregisterContentObserver(it) }
+            volumeObserverRegistered = false
+        }
+        try {
+            if (mediaPlayer?.isPlaying == true) mediaPlayer?.stop()
+        } catch (_: Exception) { }
         mediaPlayer?.release()
         mediaPlayer = null
-        wakeLock?.release()
+        mediaPlayerReady = false
+        if (wakeLock?.isHeld == true) wakeLock?.release()
         getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE)
             .edit { remove("last_ringtone_path") }
     }

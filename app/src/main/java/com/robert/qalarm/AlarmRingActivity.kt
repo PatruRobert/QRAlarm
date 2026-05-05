@@ -122,6 +122,10 @@ class AlarmRingActivity : AppCompatActivity() {
             dismissedByQR = false
             return
         }
+        // Re-acquire the wake lock released in onPause (e.g. notification drawer open/close).
+        if (wakeLock?.isHeld != true) {
+            wakeLock?.acquire(10 * 60 * 1000L)
+        }
         val resumeIntent = Intent(this, AlarmService::class.java)
         resumeIntent.action = "RESUME"
         startService(resumeIntent)
@@ -129,5 +133,8 @@ class AlarmRingActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        if (wakeLock?.isHeld == true) {
+            wakeLock?.release()
+        }
     }
 }

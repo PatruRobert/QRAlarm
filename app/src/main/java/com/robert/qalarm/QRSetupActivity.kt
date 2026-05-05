@@ -144,6 +144,6 @@ class QRSetupActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        executor.shutdown()
+        executor.shutdownNow()
     }
 }

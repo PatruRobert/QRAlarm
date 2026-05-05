@@ -1,7 +1,10 @@
 package com.robert.qalarm
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -13,6 +16,8 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import java.io.File
 
 @androidx.camera.core.ExperimentalGetImage
@@ -33,7 +38,38 @@ class RingtonePickerActivity : AppCompatActivity() {
             alarm?.ringtonePaths?.let { selectedPaths.addAll(it) }
         }
 
-        buildUI(alarmId)
+        // READ_MEDIA_AUDIO is a runtime permission on Android 13+.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.READ_MEDIA_AUDIO), 200
+            )
+        } else {
+            buildUI(alarmId)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val alarmId = intent.getIntExtra("alarm_id", -1)
+        if (requestCode == 200) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                buildUI(alarmId)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Storage permission denied — cannot list ringtones.",
+                    Toast.LENGTH_LONG
+                ).show()
+                finish()
+            }
+        }
     }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
@@ -239,9 +275,9 @@ class RingtonePickerActivity : AppCompatActivity() {
                     previewPlayer?.release()
                     previewPlayer = MediaPlayer().apply {
                         setDataSource(file.absolutePath)
-                        prepare()
-                        start()
-                        setOnCompletionListener { release() }
+                        setOnPreparedListener { mp -> mp.start() }
+                        setOnCompletionListener { it.release(); previewPlayer = null }
+                        prepareAsync()
                     }
                 }
             }
