@@ -7,7 +7,9 @@
       "Bash(./gradlew compileDebugKotlin)",
       "Bash(gradlew.bat --stop)",
       "Bash(cmd.exe *)",
-      "PowerShell(& \"H:\\\\Android_Projects\\\\QAlarm\\\\gradlew.bat\" --stop)"
+      "PowerShell(& \"H:\\\\Android_Projects\\\\QAlarm\\\\gradlew.bat\" --stop)",
+      "Bash(Get-ChildItem -Path \"h:\\\\Android_Projects\\\\QAlarm\" -Recurse -Include \"*.kt\", \"*.xml\", \"*.gradle\", \"*.gradle.kts\")",
+      "Bash(Select-Object FullName)"
     ]
   }
 }

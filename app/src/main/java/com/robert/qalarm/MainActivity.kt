@@ -1,10 +1,14 @@
 package com.robert.qalarm
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
@@ -18,7 +22,6 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-@androidx.camera.core.ExperimentalGetImage
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -40,13 +43,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                     101
+                )
+            }
+        }
+
+        // On API 31–32 the user must grant SCHEDULE_EXACT_ALARM in Settings.
+        // On API 33+ USE_EXACT_ALARM is auto-granted for alarm apps, so this only
+        // fires on older builds or if the user manually revoked it.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val am = getSystemService(AlarmManager::class.java)
+            if (!am.canScheduleExactAlarms()) {
+                Toast.makeText(
+                    this,
+                    "Please grant 'Alarms & reminders' permission so alarms can fire on time.",
+                    Toast.LENGTH_LONG
+                ).show()
+                startActivity(
+                    Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                        data = Uri.parse("package:$packageName")
+                    }
                 )
             }
         }
